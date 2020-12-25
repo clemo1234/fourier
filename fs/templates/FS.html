@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+            // ...options...
+        });
+    });
+</script>
+<style>
+#myCanvas{
+     background-color: white;
+     background-image: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/3667a532-da0b-4720-b0e6-28699e0eb560/d4ym86u-2cd2c16e-1470-42e1-ac92-b834601305d9.png/v1/fill/w_900,h_900,strp/grid___png_file_transparent__by_alexandoria_d4ym86u-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3siaGVpZ2h0IjoiPD05MDAiLCJwYXRoIjoiXC9mXC8zNjY3YTUzMi1kYTBiLTQ3MjAtYjBlNi0yODY5OWUwZWI1NjBcL2Q0eW04NnUtMmNkMmMxNmUtMTQ3MC00MmUxLWFjOTItYjgzNDYwMTMwNWQ5LnBuZyIsIndpZHRoIjoiPD05MDAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.LU-2Oya8rtIAGKmL6ztWz6yudArrrsvIetjDxV_RO6E); 
+     background-position: center; 
+}
+button {
+ background-color: black; 
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+button:disabled,
+button[disabled]{
+  background-color: grey; 
+}
+button:hover{
+     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+#divi{
+    width: auto;
+    height: auto;
+}
+#cow{
+       display : inline-block;
+    
+}
+#result{
+  color: black;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+}
+
+</style>
+</head>
+<body>
+<h1>Fourier Series Grapher</h1>
+<h4>By Clement Charles</h4>
+<p>{{Error}}</p>
+<div class="container">
+$$ \sum_{k=1}^{\infty} {{content}}$$
+</div>
+<form method="POST">
+<input name="form">
+<input name="period">
+<input type="submit">
+</form>
+<br>
+<h1 id = "warn"></h1>
+<div id = "divi">
+<div>
+<h3 id = "hding">Wave Type</h3>
+<select id="mySelect">
+  <option>Sawtooth</option>
+  <option>Triangle</option>
+  <option>Square</option>
+  <option>Special</option>
+</select>
+</div>
+
+<canvas id="myCanvas" width="600" height="500"
+style="border:1px solid #c3c3c3;">
+</canvas>
+
+
+</div>'
+<div id = "cow">
+
+<h5>Number of Sinusoidal Waves</h5> <input type = "Number" id='result'>
+<button onclick="draw()">GRAPH!</button>
+<button onclick="clr()">CLEAR GRAPH PAGE!</button>
+</div>
+<button id = "down" onclick="download()">Download</button>
+<script>
+
+var xpts = [];
+var ypts = [];
+
+document.getElementById("down").disabled = true;
+
+
+function download(){
+    
+    var canvas = document.getElementById("myCanvas");
+    var img    = canvas.toDataURL("image/png");
+    document.write('<img src="'+img+'"/>');
+     
+}
+function clr() {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "red";
+ctx.fillRect(0, 0, 300, 150);
+  ctx.clearRect(0, 0, 6000, 5000);
+  xpts = [];
+  ypts = [];
+  document.getElementById("warn").innerHTML = "";
+  document.getElementById("down").disabled = true;
+}
+const pi = 3.14159;
+const conv = pi/180;
+function special(num,p){
+     sum = 0;
+     for (j = 1; j < p; j++){
+          odd = (j*2)-1;
+          temp = 100*(((-2*((-1)**odd)/(odd*pi))*(Math.cos((pi*odd*num)))));
+          sum += temp;
+     }
+     return sum
+}
+function special2(num,p){
+     sum = 0;
+     for (j = 1; j < p; j++){
+          odd = (j*2)-1;
+          temp = 100*(((-2*((-1)**odd)/(odd*pi))*(Math.cos((pi*j*num)))));
+          sum += temp;
+     }
+     return sum
+}
+function special3(num,p){
+     sum = 0;
+     for (j = 1; j < p; j++){
+          odd = (j*2)-1;
+          temp = 100*(((-2*((-1)**j)/(j*pi))*(Math.cos((pi*j*num)))));
+          sum += temp;
+     }
+     return sum
+}
+function fs2(num,p){
+     sum = 0;
+     for (j = 1; j < p; j++){
+          odd = (j*2)-1;
+          temp = 100*(((-4/((odd**2)*(pi**2)))*(Math.cos((pi*odd*num)))));
+          sum += temp;
+     }
+     return sum;
+}
+function fs1(num,p){
+     sum = 0;
+     for (j = 1; j < p; j++){
+          odd = (j*2)-1;
+          temp = 150*(((1/odd)*(Math.sin((pi*odd*num)))));
+          sum += temp;
+     }
+     return sum;
+}
+function fs(num,p){
+     sum = 0;
+     for (j = 1; j < p; j++){
+          odd = (j*2)-1;
+          temp = 350*(((((-1)**(j))/(2*j*pi))*(Math.sin((2*pi*j*num)))));
+          sum += temp;
+     }
+     return sum;
+}
+function loop() {   
+var n = +document.getElementById('result').value;
+if (n > 1000){
+     document.getElementById("result").stepDown(n-1000);
+     document.getElementById("warn").innerHTML = "Cannot compute n > 1000";
+     n = 1000;
+     window.scrollTo(0,0);
+}
+if (n < 0){
+     document.getElementById("result").stepUp(Math.abs(n)*2);
+     document.getElementById("warn").innerHTML = "Illegal Input. Cannot compute n < 0";
+     n = Math.abs(n);
+      if (n > 1000){
+          document.getElementById("warn").innerHTML = "Advised not to excede -50000 for best performance";
+     }
+}
+for (var x = 1; x < 1000; x++) {
+     
+     ang = x * conv;
+     y = fs(ang,n+1);
+     ypts.push(y+250);
+     xpts.push(x);     
+
+}
+}
+
+function loop1() {   
+var n = +document.getElementById('result').value;
+if (n > 1000){
+     document.getElementById("result").stepDown(n-1000);
+     document.getElementById("warn").innerHTML = "Cannot compute n > 1000";
+     n = 1000;
+}
+if (n < 0){
+     document.getElementById("result").stepUp(Math.abs(n)*2);
+     document.getElementById("warn").innerHTML = "Illegal Input. Cannot compute n < 0";
+     n = Math.abs(n);
+     if (n > 1000){
+          document.getElementById("warn").innerHTML = "Advised not to excede -50000 for best performance";
+     }
+}
+for (var x = 1; x < 1000; x++) {
+     
+     ang = x * conv;
+     y = fs1(ang,n+1);
+     ypts.push(y+250);
+     xpts.push(x);     
+
+}
+}
+function loop2() {   
+var n = +document.getElementById('result').value;
+if (n > 1000){
+     document.getElementById("result").stepDown(n-1000);
+     document.getElementById("warn").innerHTML = "Cannot compute n > 1000";
+     n = 1000;
+}
+if (n < 0){
+     document.getElementById("result").stepUp(Math.abs(n)*2);
+     document.getElementById("warn").innerHTML = "Illegal Input. Cannot compute n < 0";
+     n = Math.abs(n);
+     if (n > 1000){
+          document.getElementById("warn").innerHTML = "Advised not to excede -50000 for best performance";
+     }
+}
+for (var x = 1; x < 1000; x++) {
+     
+     ang = x * conv;
+     y = fs2(ang,n+1);
+     ypts.push(y+250);
+     xpts.push(x);     
+
+}
+}
+function loop3() {   
+var n = +document.getElementById('result').value;
+if (n > 1000){
+     document.getElementById("result").stepDown(n-1000);
+     document.getElementById("warn").innerHTML = "Cannot compute n > 1000";
+     n = 1000;
+}
+if (n < 0){
+     document.getElementById("result").stepUp(Math.abs(n)*2);
+     document.getElementById("warn").innerHTML = "Illegal Input. Cannot compute n < 0";
+     n = Math.abs(n);
+     if (n > 1000){
+          document.getElementById("warn").innerHTML = "Advised not to excede -50000 for best performance";
+     }
+}
+for (var x = 1; x < 1000; x++) {
+     
+     ang = x * conv;
+     y = special(ang,n+1);
+     ypts.push(y+250);
+     xpts.push(x);     
+
+}
+}
+function draw() {
+      document.getElementById("down").disabled = false;
+     if(xpts.length>1000){
+          var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "red";
+ctx.fillRect(0, 0, 300, 150);
+  ctx.clearRect(0, 0, 6000, 5000);
+  xpts = [];
+  ypts = [];  
+     }
+ var obj = document.getElementById("mySelect");
+  if (obj.options[obj.selectedIndex].text == "Sawtooth"){
+       loop();
+  }
+  if (obj.options[obj.selectedIndex].text == "Square"){
+       loop1();
+  }
+ if (obj.options[obj.selectedIndex].text == "Triangle"){
+       loop2();
+  }
+   if (obj.options[obj.selectedIndex].text == "Special"){
+       loop3();
+  }
+  var canvas = document.getElementById('myCanvas');
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    ctx.strokeStyle = "#FF0000";
+    ctx.beginPath();
+    
+    for (i = 0; i < xpts.length; i++) {
+          ctx.lineTo(xpts[i], ypts[i]);
+          ctx.stroke();
+    }
+    if (xpts.length > 1001){
+          var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "red";
+ctx.fillRect(0, 0, 300, 150);
+  ctx.clearRect(0, 0, 6000, 5000);
+  xpts = [];
+  ypts = []; 
+  draw();
+    }
+  }
+ 
+}
+
+
+
+
+</script>
+
+</body>
+
+</html>
